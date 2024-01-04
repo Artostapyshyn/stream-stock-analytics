@@ -1,4 +1,4 @@
-package com.artostapyshyn.configserver;
+package com.artostapyshyn.config.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
