@@ -32,7 +32,7 @@ public class DataRetrievalServiceImpl implements DataRetrievalService {
 
         long startTime = System.currentTimeMillis();
         RequestStatistics requestStatistics = new RequestStatistics();
-        requestStatistics.setRequestType("YOUR_REQUEST_TYPE");
+        requestStatistics.setRequestType(symbol + " " + interval);
         requestStatistics.setTimestamp(LocalDateTime.now());
 
         ResponseEntity<Object> responseEntity = restTemplate.exchange(

@@ -1,6 +1,7 @@
 package com.artostapyshyn.data.retrival.controller;
 
 import com.artostapyshyn.data.retrival.service.DataRetrievalService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +14,11 @@ public class DataRetrievalController {
 
     private final DataRetrievalService dataRetrievalService;
 
+    @Operation(summary = "Get data from Alpha Vantage API")
     @GetMapping("/get-data")
     public ResponseEntity<Object> getData(@RequestParam String symbol,
                                           @RequestParam String interval,
-                                          @RequestParam String apiKey) {
-        return dataRetrievalService.getData(symbol, interval, apiKey);
+                                          @RequestParam String apikey) {
+        return dataRetrievalService.getData(symbol, interval, apikey);
     }
 }
