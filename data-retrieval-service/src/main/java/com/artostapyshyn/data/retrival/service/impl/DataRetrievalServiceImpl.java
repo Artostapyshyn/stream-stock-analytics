@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -22,13 +23,13 @@ public class DataRetrievalServiceImpl implements DataRetrievalService {
     private final FinancialDataSenderService financialDataSenderService;
 
     @Override
-    public ResponseEntity<Object> getData(String symbol, String interval, String apiKey) {
+    public ResponseEntity<Object> getData(String function, String symbol, String interval) {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-                .queryParam("function", "TIME_SERIES_INTRADAY")
+                .queryParam("function", function)
                 .queryParam("symbol", symbol)
                 .queryParam("interval", interval)
-                .queryParam("apikey", apiKey);
+                .queryParam("apikey", "C656F9GOXQS3O9BI");
 
         long startTime = System.currentTimeMillis();
         RequestStatistics requestStatistics = new RequestStatistics();
@@ -48,7 +49,9 @@ public class DataRetrievalServiceImpl implements DataRetrievalService {
 
         if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
             String jsonResponse = responseEntity.getBody().toString();
-            financialDataSenderService.sendFinancialData(jsonResponse);
+            String requestId = UUID.randomUUID().toString();
+            jsonResponse = jsonResponse.substring(0, jsonResponse.length() - 1) + ",\"requestId\":\"" + requestId + "\"}";
+            financialDataSenderService.sendFinancialData(jsonResponse, requestId);
         }
 
         return responseEntity;
