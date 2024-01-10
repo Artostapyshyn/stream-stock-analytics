@@ -1,7 +1,7 @@
 package com.artostapyshyn.data.analysis.service.impl;
 
 import com.artostapyshyn.data.analysis.model.StockData;
-import com.artostapyshyn.data.analysis.service.StockService;
+import com.artostapyshyn.data.analysis.service.StockDataService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class StockDataServiceImpl implements StockService {
+public class StockDataServiceImpl implements StockDataService {
 
     private final ObjectMapper objectMapper;
 

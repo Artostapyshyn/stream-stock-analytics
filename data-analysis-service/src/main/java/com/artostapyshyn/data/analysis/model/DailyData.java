@@ -12,17 +12,17 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DailyData {
     @JsonProperty("1. open")
-    private String open;
+    private Double open;
 
     @JsonProperty("2. high")
-    private String high;
+    private Double high;
 
     @JsonProperty("3. low")
-    private String low;
+    private Double low;
 
     @JsonProperty("4. close")
-    private String close;
+    private Double close;
 
     @JsonProperty("5. volume")
-    private String volume;
+    private Double volume;
 }
