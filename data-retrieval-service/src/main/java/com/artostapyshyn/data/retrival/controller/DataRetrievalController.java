@@ -16,9 +16,9 @@ public class DataRetrievalController {
 
     @Operation(summary = "Get data from Alpha Vantage API")
     @GetMapping("/get-data")
-    public ResponseEntity<Object> getData(@RequestParam String symbol,
-                                          @RequestParam String interval,
-                                          @RequestParam String apikey) {
-        return dataRetrievalService.getData(symbol, interval, apikey);
+    public ResponseEntity<Object> getData(@RequestParam String function,
+                                          @RequestParam String symbol,
+                                          @RequestParam String interval) {
+        return dataRetrievalService.getData(function, symbol, interval);
     }
 }

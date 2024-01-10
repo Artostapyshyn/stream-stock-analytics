@@ -14,6 +14,9 @@ public class GatewayConfig {
                 .route("data_retrieval_service_route", r ->
                         r.path("/api/v1/data-retrieval/**")
                                 .uri("http://localhost:9001"))
+                .route("data_analysis_service_route", r ->
+                        r.path("/api/data-analysis/**")
+                                .uri("http://localhost:9000"))
                 .build();
     }
 }
