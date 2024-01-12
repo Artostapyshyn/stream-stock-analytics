@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -23,11 +24,11 @@ public class AnalysisController {
     private final AmqpTemplate rabbitTemplate;
     private final IndicatorCalculationService indicatorCalculationService;
 
-    private ResponseEntity<Object> handleStockDataRequest(String requestId, Function<StockData, Double> calculationFunction) {
+    private ResponseEntity<Object> handleStockDataRequest(String requestId, Function<StockData, Map<String, Double>> calculationFunction) {
         StockData stockData = Optional.ofNullable((StockData) rabbitTemplate.convertSendAndReceive("exchange_name", "routing_key", requestId))
                 .orElseThrow(() -> new StockDataNotFoundException("Failed to get StockData from RabbitMQ"));
 
-        double result = calculationFunction.apply(stockData);
+        Map<String, Double> result = calculationFunction.apply(stockData);
         return ResponseEntity.ok(result);
     }
 

@@ -6,6 +6,7 @@ import com.artostapyshyn.data.analysis.service.IndicatorCalculationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -13,66 +14,54 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class IndicatorCalculationServiceImpl implements IndicatorCalculationService {
 
-    private double calculateTotal(Map<String, DailyData> dailyDataMap, Function<DailyData, Double> calculationFunction) {
-        double total = 0.0;
+    private Map<String, Double> calculateAverage(Map<String, DailyData> dailyDataMap, Function<DailyData, Double> calculationFunction) {
+        Map<String, Double> resultMap = new HashMap<>();
 
         for (Map.Entry<String, DailyData> entry : dailyDataMap.entrySet()) {
             DailyData dailyData = entry.getValue();
-            total += calculationFunction.apply(dailyData);
+            double result = calculationFunction.apply(dailyData);
+            resultMap.put(entry.getKey(), result);
         }
 
-        return total;
-    }
-
-    private double calculateAverage(Map<String, DailyData> dailyDataMap, Function<DailyData, Double> calculationFunction) {
-        int count = dailyDataMap.size();
-
-        if (count > 0) {
-            double total = calculateTotal(dailyDataMap, calculationFunction);
-            return total / count;
-        } else {
-            return 0.0;
-        }
+        return resultMap;
     }
 
     @Override
-    public double calculateAveragePrice(StockData stockData) {
+    public Map<String, Double> calculateAveragePrice(StockData stockData) {
         Map<String, DailyData> dailyDataMap = stockData.getDailyDataMap();
         return calculateAverage(dailyDataMap, dailyData -> (dailyData.getHigh() + dailyData.getLow()) / 2);
     }
 
     @Override
-    public double calculatePriceChange(StockData stockData) {
+    public Map<String, Double> calculatePriceChange(StockData stockData) {
         Map<String, DailyData> dailyDataMap = stockData.getDailyDataMap();
         return calculateAverage(dailyDataMap, dailyData -> dailyData.getClose() - dailyData.getOpen());
     }
 
     @Override
-    public double calculatePercentagePriceChange(StockData stockData) {
+    public Map<String, Double> calculatePercentagePriceChange(StockData stockData) {
         Map<String, DailyData> dailyDataMap = stockData.getDailyDataMap();
 
         if (dailyDataMap.isEmpty()) {
-            return 0;
+            return new HashMap<>();
         }
 
-        double totalPercentageChange = 0;
+        Map<String, Double> resultMap = new HashMap<>();
 
         for (Map.Entry<String, DailyData> entry : dailyDataMap.entrySet()) {
             DailyData dailyData = entry.getValue();
             double open = dailyData.getOpen();
             double close = dailyData.getClose();
             double percentageChange = ((close - open) / open) * 100;
-            totalPercentageChange += percentageChange;
+            resultMap.put(entry.getKey(), percentageChange);
         }
 
-        return totalPercentageChange / dailyDataMap.size();
+        return resultMap;
     }
 
-
     @Override
-    public double calculateAverageVolume(StockData stockData) {
+    public Map<String, Double> calculateAverageVolume(StockData stockData) {
         Map<String, DailyData> dailyDataMap = stockData.getDailyDataMap();
         return calculateAverage(dailyDataMap, DailyData::getVolume);
     }
 }
-
