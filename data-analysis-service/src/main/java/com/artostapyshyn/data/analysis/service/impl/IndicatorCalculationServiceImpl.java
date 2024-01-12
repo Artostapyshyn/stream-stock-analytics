@@ -49,20 +49,30 @@ public class IndicatorCalculationServiceImpl implements IndicatorCalculationServ
 
     @Override
     public double calculatePercentagePriceChange(StockData stockData) {
-        // TODO
-        return 0;
+        Map<String, DailyData> dailyDataMap = stockData.getDailyDataMap();
+
+        if (dailyDataMap.isEmpty()) {
+            return 0;
+        }
+
+        double totalPercentageChange = 0;
+
+        for (Map.Entry<String, DailyData> entry : dailyDataMap.entrySet()) {
+            DailyData dailyData = entry.getValue();
+            double open = dailyData.getOpen();
+            double close = dailyData.getClose();
+            double percentageChange = ((close - open) / open) * 100;
+            totalPercentageChange += percentageChange;
+        }
+
+        return totalPercentageChange / dailyDataMap.size();
     }
+
 
     @Override
     public double calculateAverageVolume(StockData stockData) {
         Map<String, DailyData> dailyDataMap = stockData.getDailyDataMap();
         return calculateAverage(dailyDataMap, DailyData::getVolume);
-    }
-
-    @Override
-    public double calculatePercentageVolumeChange(StockData stockData) {
-        // TODO
-        return 0;
     }
 }
 

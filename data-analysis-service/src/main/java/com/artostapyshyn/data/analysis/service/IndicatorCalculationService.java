@@ -7,5 +7,4 @@ public interface IndicatorCalculationService {
     double calculatePriceChange(StockData stockData);
     double calculatePercentagePriceChange(StockData stockData);
     double calculateAverageVolume(StockData stockData);
-    double calculatePercentageVolumeChange(StockData stockData);
 }
