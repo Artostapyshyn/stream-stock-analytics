@@ -56,4 +56,15 @@ public class AnalysisController {
         return handleStockDataRequest(requestId, indicatorCalculationService::calculateAverageVolume);
     }
 
+    @Operation(summary = "Calculate min price for given stock data with request id")
+    @GetMapping("/min-price")
+    public ResponseEntity<Object> calculateMinPrice(@RequestParam("requestId") String requestId) {
+        return handleStockDataRequest(requestId, indicatorCalculationService::calculateMinPrice);
+    }
+
+    @Operation(summary = "Calculate max price for given stock data with request id")
+    @GetMapping("/max-price")
+    public ResponseEntity<Object> calculateMaxPrice(@RequestParam("requestId") String requestId) {
+        return handleStockDataRequest(requestId, indicatorCalculationService::calculateMaxPrice);
+    }
 }

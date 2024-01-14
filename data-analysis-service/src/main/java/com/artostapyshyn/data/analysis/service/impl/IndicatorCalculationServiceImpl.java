@@ -16,7 +16,6 @@ public class IndicatorCalculationServiceImpl implements IndicatorCalculationServ
 
     private Map<String, Double> calculateAverage(Map<String, DailyData> dailyDataMap, Function<DailyData, Double> calculationFunction) {
         Map<String, Double> resultMap = new HashMap<>();
-
         for (Map.Entry<String, DailyData> entry : dailyDataMap.entrySet()) {
             DailyData dailyData = entry.getValue();
             double result = calculationFunction.apply(dailyData);
@@ -47,7 +46,6 @@ public class IndicatorCalculationServiceImpl implements IndicatorCalculationServ
         }
 
         Map<String, Double> resultMap = new HashMap<>();
-
         for (Map.Entry<String, DailyData> entry : dailyDataMap.entrySet()) {
             DailyData dailyData = entry.getValue();
             double open = dailyData.getOpen();
@@ -63,5 +61,41 @@ public class IndicatorCalculationServiceImpl implements IndicatorCalculationServ
     public Map<String, Double> calculateAverageVolume(StockData stockData) {
         Map<String, DailyData> dailyDataMap = stockData.getDailyDataMap();
         return calculateAverage(dailyDataMap, DailyData::getVolume);
+    }
+
+    @Override
+    public Map<String, Double> calculateMinPrice(StockData stockData) {
+        Map<String, DailyData> dailyDataMap = stockData.getDailyDataMap();
+
+        if (dailyDataMap.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        Map<String, Double> resultMap = new HashMap<>();
+        for (Map.Entry<String, DailyData> entry : dailyDataMap.entrySet()) {
+            DailyData dailyData = entry.getValue();
+            double minPrice = Math.min(dailyData.getOpen(), dailyData.getClose());
+            resultMap.put(entry.getKey(), minPrice);
+        }
+
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Double> calculateMaxPrice(StockData stockData) {
+        Map<String, DailyData> dailyDataMap = stockData.getDailyDataMap();
+
+        if (dailyDataMap.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        Map<String, Double> resultMap = new HashMap<>();
+        for (Map.Entry<String, DailyData> entry : dailyDataMap.entrySet()) {
+            DailyData dailyData = entry.getValue();
+            double minPrice = Math.max(dailyData.getOpen(), dailyData.getClose());
+            resultMap.put(entry.getKey(), minPrice);
+        }
+
+        return resultMap;
     }
 }

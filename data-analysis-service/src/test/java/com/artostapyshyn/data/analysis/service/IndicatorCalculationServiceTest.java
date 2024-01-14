@@ -46,4 +46,18 @@ class IndicatorCalculationServiceTest {
         Map<String, Double> priceChanges = indicatorService.calculatePriceChange(stockData);
         assertEquals(50.0, priceChanges.get("2022-01-01"));
     }
+
+    @Test
+    void testCalculateMinPrice() {
+        StockData stockData = generateFixedStockData();
+        Map<String, Double> minPrices = indicatorService.calculateMinPrice(stockData);
+        assertEquals(50.0, minPrices.get("2022-01-01"));
+    }
+
+    @Test
+    void testCalculateMaxPrice() {
+        StockData stockData = generateFixedStockData();
+        Map<String, Double> maxPrices = indicatorService.calculateMaxPrice(stockData);
+        assertEquals(100.0, maxPrices.get("2022-01-01"));
+    }
 }

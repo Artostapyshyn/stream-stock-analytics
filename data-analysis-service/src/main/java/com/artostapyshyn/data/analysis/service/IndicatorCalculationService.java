@@ -8,4 +8,6 @@ public interface IndicatorCalculationService {
     Map<String, Double> calculatePriceChange(StockData stockData);
     Map<String, Double> calculatePercentagePriceChange(StockData stockData);
     Map<String, Double> calculateAverageVolume(StockData stockData);
+    Map<String, Double> calculateMinPrice(StockData stockData);
+    Map<String, Double> calculateMaxPrice(StockData stockData);
 }
