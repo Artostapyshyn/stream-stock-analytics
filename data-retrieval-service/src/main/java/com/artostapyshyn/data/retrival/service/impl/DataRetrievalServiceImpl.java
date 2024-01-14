@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Random;
 
 @Log4j2
 @Service
@@ -23,9 +23,9 @@ public class DataRetrievalServiceImpl implements DataRetrievalService {
 
     private final RequestStatisticsService requestStatisticsService;
     private final RestTemplate restTemplate;
-    private final static String URL = "https://www.alphavantage.co/query";
+    private static final String URL = "https://www.alphavantage.co/query";
     private final FinancialDataSenderService financialDataSenderService;
-    private final Random random = new Random();
+    private final SecureRandom secureRandom = new SecureRandom();
 
     @SneakyThrows
     @Override
@@ -57,7 +57,7 @@ public class DataRetrievalServiceImpl implements DataRetrievalService {
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonResponse = objectMapper.writeValueAsString(responseEntity.getBody());
 
-            String requestId = String.valueOf(random.nextInt(90000) + 10000);
+            String requestId = String.valueOf(secureRandom.nextInt(90000) + 10000);
             jsonResponse = jsonResponse.substring(0, jsonResponse.length() - 1) + ",\"requestId\":\"" + requestId + "\"}";
             log.warn(jsonResponse);
             financialDataSenderService.sendFinancialData(jsonResponse);
