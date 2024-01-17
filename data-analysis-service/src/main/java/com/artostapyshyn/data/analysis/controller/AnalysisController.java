@@ -1,11 +1,8 @@
 package com.artostapyshyn.data.analysis.controller;
 
-import com.artostapyshyn.data.analysis.config.MessageMapHolder;
-import com.artostapyshyn.data.analysis.exceptions.StockDataNotFoundException;
 import com.artostapyshyn.data.analysis.model.StockData;
 import com.artostapyshyn.data.analysis.service.IndicatorCalculationService;
 import com.artostapyshyn.data.analysis.service.StockDataService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,23 +22,10 @@ import java.util.function.Function;
 public class AnalysisController {
 
     private final IndicatorCalculationService indicatorCalculationService;
-    private final MessageMapHolder messageMapHolder;
     private final StockDataService stockDataService;
 
     private ResponseEntity<Object> handleStockDataRequest(String requestId, Function<StockData, Map<String, Double>> calculationFunction) {
-        String json = messageMapHolder.getStockDataMap().get(requestId);
-
-        if (json == null) {
-            throw new StockDataNotFoundException("Failed to get StockData from RabbitMQ");
-        }
-
-        log.warn("Received stock data: {}", json);
-        StockData stockData = null;
-        try {
-            stockData = stockDataService.parseJson(json);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        StockData stockData = stockDataService.getStockDataFromQueue(requestId);
         Map<String, Double> result = calculationFunction.apply(stockData);
         return ResponseEntity.ok(result);
     }

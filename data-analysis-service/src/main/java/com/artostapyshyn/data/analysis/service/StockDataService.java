@@ -5,4 +5,5 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface StockDataService {
     StockData parseJson(String json) throws JsonProcessingException;
+    StockData getStockDataFromQueue(String requestId);
 }

@@ -16,7 +16,7 @@ public class StockData {
     @JsonProperty("Meta Data")
     private MetaData metaData;
 
-    @JsonProperty("Time Series (Daily)")
+    @JsonProperty("Time Series (30min)")
     private Map<String, DailyData> dailyDataMap;
 
     @JsonProperty("requestId")
