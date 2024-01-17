@@ -12,6 +12,10 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -30,7 +34,7 @@ public class ReportServiceImpl implements ReportService {
     private static final String XLSX_FORMAT = "xlsx";
 
     @Override
-    public byte[] generateReport(StockData stockData, String format, List<String> indicators) {
+    public Resource generateReport(StockData stockData, String format, List<String> indicators) {
         return switch (format) {
             case PDF_FORMAT -> generatePdfReport(stockData, indicators);
             case XLSX_FORMAT -> generateXlsxReport(stockData, indicators);
@@ -38,8 +42,7 @@ public class ReportServiceImpl implements ReportService {
         };
     }
 
-    @Override
-    public byte[] generatePdfReport(StockData stockData, List<String> indicators) {
+    public Resource generatePdfReport(StockData stockData, List<String> indicators) {
         Map<String, Map<String, Double>> indicatorResults = calculateIndicators(stockData, indicators);
 
         Document document = new Document();
@@ -63,16 +66,18 @@ public class ReportServiceImpl implements ReportService {
             }
 
             document.close();
-            return outputStream.toByteArray();
+
+            byte[] pdfBytes = outputStream.toByteArray();
+            String fileName = "report.pdf";
+            return generateFileResource(pdfBytes, fileName);
 
         } catch (Exception e) {
             log.error("Error occurred while generating PDF report", e);
+            return null;
         }
-        return new byte[0];
     }
 
-    @Override
-    public byte[] generateXlsxReport(StockData stockData, List<String> indicators) {
+    public Resource generateXlsxReport(StockData stockData, List<String> indicators) {
         Map<String, Map<String, Double>> indicatorResults = calculateIndicators(stockData, indicators);
 
         try (Workbook workbook = new HSSFWorkbook()) {
@@ -101,16 +106,27 @@ public class ReportServiceImpl implements ReportService {
                 }
             }
 
-            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-                workbook.write(outputStream);
-                return outputStream.toByteArray();
-            }
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+
+            byte[] xlsxBytes = outputStream.toByteArray();
+            String fileName = "report.xlsx";
+            return generateFileResource(xlsxBytes, fileName);
         } catch (IOException e) {
             log.error("Error occurred while generating XLSX report", e);
+            return null;
         }
-        return new byte[0];
     }
 
+    private Resource generateFileResource(byte[] bytes, String fileName) {
+        HttpHeaders headers = getFileDownloadHeaders(fileName);
+        return new ByteArrayResource(bytes) {
+            @Override
+            public String getFilename() {
+                return fileName;
+            }
+        };
+    }
 
     public Map<String, Map<String, Double>> calculateIndicators(StockData stockData, List<String> indicators) {
         Map<String, Map<String, Double>> result = new HashMap<>();
@@ -132,5 +148,12 @@ public class ReportServiceImpl implements ReportService {
         }
 
         return result;
+    }
+
+    public HttpHeaders getFileDownloadHeaders(String fileName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", fileName);
+        return headers;
     }
 }
