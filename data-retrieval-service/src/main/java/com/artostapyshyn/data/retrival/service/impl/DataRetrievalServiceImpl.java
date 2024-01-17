@@ -59,8 +59,8 @@ public class DataRetrievalServiceImpl implements DataRetrievalService {
 
             String requestId = String.valueOf(secureRandom.nextInt(90000) + 10000);
             jsonResponse = jsonResponse.substring(0, jsonResponse.length() - 1) + ",\"requestId\":\"" + requestId + "\"}";
-            log.warn(jsonResponse);
-            financialDataSenderService.sendFinancialData(jsonResponse);
+
+            financialDataSenderService.sendFinancialData(jsonResponse, requestId);
         }
 
         return responseEntity;
