@@ -1,25 +1,35 @@
 package com.artostapyshyn.api.gateway.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@EnableHystrix
 public class GatewayConfig {
+
+    @Autowired
+    private AuthenticationFilter filter;
 
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("data_retrieval_service_route", r ->
-                        r.path("/api/v1/data-retrieval/**")
-                                .uri("http://localhost:9001"))
-                .route("data_analysis_service_route", r ->
-                        r.path("/api/v1/data-analysis/**")
-                                .uri("http://localhost:9000"))
-                .route("data_analysis_service_route", r ->
-                        r.path("/api/v1/report/**")
-                                .uri("http://localhost:9000"))
+                .route("user-service", r -> r.path("/api/v1/users/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://user-service"))
+                .route("auth-service", r -> r.path("/api/v1/auth/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://auth-service"))
+                .route("data-retrieval-service-route", r -> r.path("/api/v1/data-retrieval/**")
+                                .uri("lb://data-retrieval-service"))
+                .route("data-analysis-service-route", r -> r.path("/api/v1/data-analysis/**")
+                                .uri("lb://data-analysis-service"))
+                .route("report-service-route", r -> r.path("/api/v1/report/**")
+                                .uri("lb://data-analysis-service"))
                 .build();
     }
 }
+
