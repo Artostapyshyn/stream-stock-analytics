@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public Resource generatePdfReport(StockData stockData, List<String> indicators) {
-        Map<String, Map<String, Double>> indicatorResults = calculateIndicators(stockData, indicators);
+        Map<String, Map<String, BigDecimal>> indicatorResults = calculateIndicators(stockData, indicators);
 
         Document document = new Document();
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
@@ -55,10 +56,10 @@ public class ReportServiceImpl implements ReportService {
             document.add(new Paragraph("Time Zone: " + stockData.getMetaData().getTimeZone()));
             document.add(new Paragraph("\n"));
 
-            for (Map.Entry<String, Map<String, Double>> entry : indicatorResults.entrySet()) {
+            for (Map.Entry<String, Map<String, BigDecimal>> entry : indicatorResults.entrySet()) {
                 document.add(new Paragraph(entry.getKey()));
 
-                for (Map.Entry<String, Double> data : entry.getValue().entrySet()) {
+                for (Map.Entry<String, BigDecimal> data : entry.getValue().entrySet()) {
                     document.add(new Paragraph(data.getKey() + ": " + data.getValue()));
                 }
 
@@ -78,10 +79,10 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public Resource generateXlsxReport(StockData stockData, List<String> indicators) {
-        Map<String, Map<String, Double>> indicatorResults = calculateIndicators(stockData, indicators);
+        Map<String, Map<String, BigDecimal>> indicatorResults = calculateIndicators(stockData, indicators);
 
         try (Workbook workbook = new HSSFWorkbook()) {
-            for (Map.Entry<String, Map<String, Double>> entry : indicatorResults.entrySet()) {
+            for (Map.Entry<String, Map<String, BigDecimal>> entry : indicatorResults.entrySet()) {
                 Sheet sheet = workbook.createSheet(entry.getKey());
 
                 Row metaDataRow = sheet.createRow(0);
@@ -99,10 +100,10 @@ public class ReportServiceImpl implements ReportService {
                 sheet.createRow(3);
 
                 int rowIndex = 4;
-                for (Map.Entry<String, Double> data : entry.getValue().entrySet()) {
+                for (Map.Entry<String, BigDecimal> data : entry.getValue().entrySet()) {
                     Row row = sheet.createRow(rowIndex++);
                     row.createCell(0).setCellValue(data.getKey());
-                    row.createCell(1).setCellValue(data.getValue());
+                    row.createCell(1).setCellValue(String.valueOf(data.getValue()));
                 }
             }
 
@@ -119,7 +120,6 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private Resource generateFileResource(byte[] bytes, String fileName) {
-        HttpHeaders headers = getFileDownloadHeaders(fileName);
         return new ByteArrayResource(bytes) {
             @Override
             public String getFilename() {
@@ -128,8 +128,8 @@ public class ReportServiceImpl implements ReportService {
         };
     }
 
-    public Map<String, Map<String, Double>> calculateIndicators(StockData stockData, List<String> indicators) {
-        Map<String, Map<String, Double>> result = new HashMap<>();
+    public Map<String, Map<String, BigDecimal>> calculateIndicators(StockData stockData, List<String> indicators) {
+        Map<String, Map<String, BigDecimal>> result = new HashMap<>();
 
         for (String indicator : indicators) {
             switch (indicator) {

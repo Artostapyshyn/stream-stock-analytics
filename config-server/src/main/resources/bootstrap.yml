@@ -1,5 +1,3 @@
 spring:
-  cloud:
-    config:
-      enabled: true
-      uri: http://localhost:9296
+  application:
+    name: config-server

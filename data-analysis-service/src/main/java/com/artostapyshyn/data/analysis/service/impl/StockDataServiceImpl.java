@@ -16,7 +16,6 @@ public class StockDataServiceImpl implements StockDataService {
     private final ObjectMapper objectMapper;
     private final MessageMapHolder messageMapHolder;
 
-
     @Override
     public StockData parseJson(String json) throws JsonProcessingException {
         return objectMapper.readValue(json, StockData.class);

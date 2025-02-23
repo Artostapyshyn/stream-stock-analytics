@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -24,9 +25,9 @@ public class AnalysisController {
     private final IndicatorCalculationService indicatorCalculationService;
     private final StockDataService stockDataService;
 
-    private ResponseEntity<Object> handleStockDataRequest(String requestId, Function<StockData, Map<String, Double>> calculationFunction) {
+    private ResponseEntity<Object> handleStockDataRequest(String requestId, Function<StockData, Map<String, BigDecimal>> calculationFunction) {
         StockData stockData = stockDataService.getStockDataFromQueue(requestId);
-        Map<String, Double> result = calculationFunction.apply(stockData);
+        Map<String, BigDecimal> result = calculationFunction.apply(stockData);
         return ResponseEntity.ok(result);
     }
 

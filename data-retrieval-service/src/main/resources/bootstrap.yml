@@ -1,5 +1,11 @@
+server:
+  port: 9000
+
 spring:
+  application:
+    name: data-retrieval-service
   cloud:
     config:
       enabled: true
-      uri: http://localhost:9296
+      uri: http://localhost:8101
+      fail-fast: true

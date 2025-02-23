@@ -1,7 +1,7 @@
 package com.artostapyshyn.api.gateway.config;
 
 import com.artostapyshyn.api.gateway.service.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -14,13 +14,12 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RefreshScope
+@AllArgsConstructor
 public class AuthenticationFilter implements GatewayFilter {
 
-    @Autowired
-    private JwtUtils jwtUtil;
+    private final JwtUtils jwtUtil;
 
-    @Autowired
-    private RouterValidator validator;
+    private final RouterValidator validator;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

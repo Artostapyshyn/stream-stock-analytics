@@ -5,9 +5,10 @@ import com.artostapyshyn.data.retrival.service.DataRetrievalService;
 import com.artostapyshyn.data.retrival.service.FinancialDataSenderService;
 import com.artostapyshyn.data.retrival.service.RequestStatisticsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,14 +19,18 @@ import java.time.LocalDateTime;
 
 @Log4j2
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DataRetrievalServiceImpl implements DataRetrievalService {
+    private static final String URL = "https://www.alphavantage.co/query";
 
     private final RequestStatisticsService requestStatisticsService;
     private final RestTemplate restTemplate;
-    private static final String URL = "https://www.alphavantage.co/query";
+
     private final FinancialDataSenderService financialDataSenderService;
     private final SecureRandom secureRandom = new SecureRandom();
+
+    @Value("${alphavantage.apikey}")
+    private String apikey;
 
     @SneakyThrows
     @Override
@@ -35,7 +40,7 @@ public class DataRetrievalServiceImpl implements DataRetrievalService {
                 .queryParam("function", function)
                 .queryParam("symbol", symbol)
                 .queryParam("interval", interval)
-                .queryParam("apikey", "C656F9GOXQS3O9BI");
+                .queryParam("apikey", apikey);
 
         long startTime = System.currentTimeMillis();
         RequestStatistics requestStatistics = new RequestStatistics();
@@ -50,7 +55,6 @@ public class DataRetrievalServiceImpl implements DataRetrievalService {
 
         long responseTime = System.currentTimeMillis() - startTime;
         requestStatistics.setResponseTime(responseTime);
-
         requestStatisticsService.save(requestStatistics);
 
         if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.getBody() != null) {
