@@ -1,8 +1,8 @@
-package org.artostapyshyn.user.service.impl;
+package com.artostapyshyn.user.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.artostapyshyn.user.model.UserVO;
-import org.artostapyshyn.user.service.UserService;
+import com.artostapyshyn.user.model.UserVO;
+import com.artostapyshyn.user.service.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

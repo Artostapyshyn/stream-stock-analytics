@@ -1,6 +1,6 @@
-package org.artostapyshyn.user.service;
+package com.artostapyshyn.user.service;
 
-import org.artostapyshyn.user.model.UserVO;
+import com.artostapyshyn.user.model.UserVO;
 
 public interface UserService {
     UserVO save(UserVO userVO);

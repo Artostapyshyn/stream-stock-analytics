@@ -3,8 +3,8 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 FROM openjdk:21-jdk
-COPY --from=build /target/data-retrieval-service-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /target/user-service-0.0.1-SNAPSHOT.jar app.jar
 
-EXPOSE 9001
+EXPOSE 9003
 
 ENTRYPOINT ["java","-jar","app.jar"]

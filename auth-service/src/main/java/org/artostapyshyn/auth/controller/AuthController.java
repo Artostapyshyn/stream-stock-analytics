@@ -1,9 +1,9 @@
-package org.artostapyshyn.auth.controller;
+package com.artostapyshyn.auth.controller;
 
 import lombok.AllArgsConstructor;
-import org.artostapyshyn.auth.model.AuthRequest;
-import org.artostapyshyn.auth.model.AuthResponse;
-import org.artostapyshyn.auth.service.AuthService;
+import com.artostapyshyn.auth.model.AuthRequest;
+import com.artostapyshyn.auth.model.AuthResponse;
+import com.artostapyshyn.auth.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

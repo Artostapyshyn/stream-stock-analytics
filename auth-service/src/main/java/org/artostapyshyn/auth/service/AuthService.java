@@ -1,7 +1,7 @@
-package org.artostapyshyn.auth.service;
+package com.artostapyshyn.auth.service;
 
-import org.artostapyshyn.auth.model.AuthRequest;
-import org.artostapyshyn.auth.model.AuthResponse;
+import com.artostapyshyn.auth.model.AuthRequest;
+import com.artostapyshyn.auth.model.AuthResponse;
 
 public interface AuthService {
     AuthResponse register(AuthRequest request);

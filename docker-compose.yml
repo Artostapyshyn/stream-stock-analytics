@@ -1,0 +1,150 @@
+version: '3.8'
+
+networks:
+  microservices-network:
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  mongo:
+    image: "mongo:6.0"
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    networks:
+      - microservices-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet mongodb://root:password@localhost:27017/test || exit 1
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  postgres:
+    image: "postgres:15"
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  config-server:
+    build: ./config-server
+    ports:
+      - "8101:8101"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+  discovery-server:
+    build: ./discovery-server
+    ports:
+      - "8001:8001"
+    depends_on:
+      config-server:
+        condition: service_started
+    networks:
+      - microservices-network
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+    networks:
+      - microservices-network
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "9002:9002"
+    depends_on:
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "9003:9003"
+    depends_on:
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+  data-analysis-service:
+    build: ./data-analysis-service
+    ports:
+      - "9000:9000"
+    depends_on:
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+  data-retrieval-service:
+    build: ./data-retrieval-service
+    ports:
+      - "9004:9004"
+    depends_on:
+      config-server:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - microservices-network

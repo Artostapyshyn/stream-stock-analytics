@@ -3,9 +3,8 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 FROM openjdk:21-jdk
-COPY --from=build /target/data-analysis-service-0.0.1-SNAPSHOT.jar app.jar
-COPY /src/main/resources/application.yml /usr/app/
+COPY --from=build /target/discovery-server-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8001
 
-ENTRYPOINT ["java","-jar","app.jar", "--spring.config.location=file:/usr/app/application.yml"]
+ENTRYPOINT ["java","-jar","app.jar"]

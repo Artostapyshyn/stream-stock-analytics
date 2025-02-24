@@ -1,4 +1,4 @@
-package org.artostapyshyn.auth.jwt;
+package com.artostapyshyn.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

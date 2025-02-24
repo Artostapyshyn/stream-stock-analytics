@@ -1,4 +1,4 @@
-package org.artostapyshyn.user.model;
+package com.artostapyshyn.user.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

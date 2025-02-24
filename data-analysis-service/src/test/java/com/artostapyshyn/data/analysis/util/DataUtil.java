@@ -4,6 +4,7 @@ import com.artostapyshyn.data.analysis.model.DailyData;
 import com.artostapyshyn.data.analysis.model.MetaData;
 import com.artostapyshyn.data.analysis.model.StockData;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,11 +33,11 @@ public class DataUtil {
 
         for (int i = 0; i < 5; i++) {
             DailyData dailyData = new DailyData(
-                    50.0,
-                    150.0,
-                    30.0,
-                    100.0,
-                    750.0
+                    new BigDecimal("50.0"),
+                    new BigDecimal("150.0"),
+                    new BigDecimal("30.0"),
+                    new BigDecimal("100.0"),
+                    new BigDecimal("750.0")
             );
             dailyDataMap.put("2022-01-0" + (i + 1), dailyData);
         }

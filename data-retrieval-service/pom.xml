@@ -11,7 +11,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>org.artostapyshyn</groupId>
+    <groupId>com.artostapyshyn</groupId>
     <artifactId>data-retrieval-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 

@@ -1,11 +1,11 @@
-package org.artostapyshyn.auth.service.impl;
+package com.artostapyshyn.auth.service.impl;
 
 import lombok.AllArgsConstructor;
-import org.artostapyshyn.auth.jwt.JwtUtil;
-import org.artostapyshyn.auth.model.AuthRequest;
-import org.artostapyshyn.auth.model.AuthResponse;
-import org.artostapyshyn.auth.model.UserVO;
-import org.artostapyshyn.auth.service.AuthService;
+import com.artostapyshyn.auth.jwt.JwtUtil;
+import com.artostapyshyn.auth.model.AuthRequest;
+import com.artostapyshyn.auth.model.AuthResponse;
+import com.artostapyshyn.auth.model.UserVO;
+import com.artostapyshyn.auth.service.AuthService;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

@@ -1,8 +1,8 @@
-package org.artostapyshyn.user.controller;
+package com.artostapyshyn.user.controller;
 
 import lombok.AllArgsConstructor;
-import org.artostapyshyn.user.model.UserVO;
-import org.artostapyshyn.user.service.UserService;
+import com.artostapyshyn.user.model.UserVO;
+import com.artostapyshyn.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
