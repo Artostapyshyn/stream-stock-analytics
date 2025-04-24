@@ -1,7 +1,18 @@
-package com.artostapyshyn.user.service;
+package org.artostapyshyn.user.service;
 
-import com.artostapyshyn.user.model.UserVO;
+import org.artostapyshyn.user.model.User;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
-    UserVO save(UserVO userVO);
+    User save(User userVO);
+
+    Optional<User> findById(Long id);
+
+    List<User> findAll();
+
+    User update(Long id, User updatedUser);
+
+    void delete(Long id);
 }
