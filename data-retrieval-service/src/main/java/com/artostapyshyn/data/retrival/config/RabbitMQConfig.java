@@ -12,7 +12,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue financialDataQueue() {
-        return new Queue("financial-data-queue");
+        return new Queue("financial-data-queue", true);
     }
 
     @Bean

@@ -1,15 +1,47 @@
+server:
+  port: 9003
+
 spring:
-  application:
-    name: user-service
-  cloud:
-    config:
-      enabled: true
-      uri: http://config-server:8101
-      fail-fast: true
-      retry:
-        initialInterval: 2000
-        maxAttempts: 30
+  mvc:
+    servlet:
+      load-on-startup: 1
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
 eureka:
   client:
     serviceUrl:
       defaultZone: http://discovery-server:8001/eureka/
+    registryFetchIntervalSeconds: 1
+  instance:
+    leaseRenewalIntervalInSeconds: 1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    enable:
+      all: true
+  health:
+    show-details: always
+  web:
+    base-path: /actuator
+
+jwt:
+  secret: MiAVzqUXy5Tfr1kVIGpPMiAVzqUXy5Tfr1kVIGpP
+  expiration: 86400

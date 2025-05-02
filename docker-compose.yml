@@ -33,7 +33,7 @@ services:
     networks:
       - microservices-network
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh --quiet mongodb://root:password@localhost:27017/test || exit 1
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet mongodb://root:password@mongo:27017/db || exit 1
       interval: 10s
       retries: 5
       start_period: 10s
@@ -45,13 +45,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: user-data
+      POSTGRES_DB: postgres
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     networks:
       - microservices-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+      test: ["CMD-SHELL", "pg_isready -U user -d postgres"]
       interval: 10s
       retries: 5
       start_period: 10s
