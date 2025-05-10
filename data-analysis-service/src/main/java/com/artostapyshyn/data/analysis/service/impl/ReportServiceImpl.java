@@ -38,6 +38,7 @@ public class ReportServiceImpl implements ReportService {
     public Resource generateReport(StockData stockData, String format, List<String> indicators) {
         return switch (format) {
             case PDF_FORMAT -> generatePdfReport(stockData, indicators);
+
             case XLSX_FORMAT -> generateXlsxReport(stockData, indicators);
             default -> throw new IllegalArgumentException("Invalid format");
         };

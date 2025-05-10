@@ -23,3 +23,5 @@ public class FinancialDataSenderServiceImpl implements FinancialDataSenderServic
         rabbitTemplate.send("financial-data-queue", message);
     }
 }
+
+

@@ -30,7 +30,8 @@ public class DataRetrievalServiceImpl implements DataRetrievalService {
     private final SecureRandom secureRandom = new SecureRandom();
 
     @Value("${alphavantage.apikey}")
-    private String apikey;
+    public String apikey;
+
 
     @SneakyThrows
     @Override

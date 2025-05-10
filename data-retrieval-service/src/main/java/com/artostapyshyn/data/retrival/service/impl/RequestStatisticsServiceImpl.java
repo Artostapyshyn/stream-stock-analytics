@@ -17,3 +17,4 @@ public class RequestStatisticsServiceImpl implements RequestStatisticsService {
         requestStatisticsDAO.save(requestStatistics);
     }
 }
+

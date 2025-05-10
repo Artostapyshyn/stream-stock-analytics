@@ -1,4 +1,4 @@
-package com.artostapyshyn.auth;
+package org.artostapyshyn.auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,3 +20,4 @@ public class AuthApplication {
         return new RestTemplate();
     }
 }
+

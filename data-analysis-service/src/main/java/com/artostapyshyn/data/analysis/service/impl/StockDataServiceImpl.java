@@ -24,6 +24,7 @@ public class StockDataServiceImpl implements StockDataService {
     @Override
     public StockData getStockDataFromQueue(String requestId) {
         
+        
         String json = messageMapHolder.getStockDataMap().get(requestId);
 
         if (json == null) {

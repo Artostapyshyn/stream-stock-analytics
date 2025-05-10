@@ -35,10 +35,6 @@ public class JwtUtil {
         return getClaims(token).getExpiration();
     }
 
-    private boolean isExpired(String token){
-        return getExpirationDate(token).before(new Date());
-    }
-
     public String generateToken(String userId, String role, String tokenType) {
         Map<String, String> claims = Map.of("id", userId, "role", role);
         long expMillis = "ACCESS".equalsIgnoreCase(tokenType)
