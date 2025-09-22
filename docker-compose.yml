@@ -62,8 +62,7 @@ services:
     ports:
       - "8101:8101"
     depends_on:
-      rabbitmq:
-        condition: service_healthy
+      - rabbitmq
     networks:
       - microservices-network
 
@@ -72,8 +71,7 @@ services:
     ports:
       - "8001:8001"
     depends_on:
-      config-server:
-        condition: service_started
+      - config-server
     networks:
       - microservices-network
 
@@ -82,10 +80,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      config-server:
-        condition: service_started
-      discovery-server:
-        condition: service_started
+      - config-server
+      - discovery-server
     networks:
       - microservices-network
 
@@ -94,12 +90,9 @@ services:
     ports:
       - "9002:9002"
     depends_on:
-      config-server:
-        condition: service_started
-      discovery-server:
-        condition: service_started
-      postgres:
-        condition: service_healthy
+      - config-server
+      - discovery-server
+      - postgres
     networks:
       - microservices-network
 
@@ -108,12 +101,9 @@ services:
     ports:
       - "9003:9003"
     depends_on:
-      config-server:
-        condition: service_started
-      discovery-server:
-        condition: service_started
-      postgres:
-        condition: service_healthy
+      - config-server
+      - discovery-server
+      - postgres
     networks:
       - microservices-network
 
@@ -122,14 +112,10 @@ services:
     ports:
       - "9000:9000"
     depends_on:
-      config-server:
-        condition: service_started
-      discovery-server:
-        condition: service_started
-      mongo:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      - config-server
+      - discovery-server
+      - mongo
+      - rabbitmq
     networks:
       - microservices-network
 
@@ -138,14 +124,10 @@ services:
     ports:
       - "9004:9004"
     depends_on:
-      config-server:
-        condition: service_started
-      discovery-server:
-        condition: service_started
-      mongo:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      - config-server
+      - discovery-server
+      - mongo
+      - rabbitmq
     networks:
       - microservices-network
 
