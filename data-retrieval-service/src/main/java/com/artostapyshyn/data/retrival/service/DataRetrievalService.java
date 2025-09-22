@@ -1,7 +1,7 @@
 package com.artostapyshyn.data.retrival.service;
 
-import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Mono;
 
 public interface DataRetrievalService {
-    ResponseEntity<Object> getData(String function, String symbol, String interval);
+    Mono<Object> getData(String function, String symbol, String interval);
 }

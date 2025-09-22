@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.artostapyshyn.user.model.User;
 import org.artostapyshyn.user.repository.UserRepository;
 import org.artostapyshyn.user.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -16,40 +16,34 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public User save(User user) {
+    public Mono<User> save(User user) {
         user.setRole("USER");
         return userRepository.save(user);
     }
 
     @Override
-    public Optional<User> findById(Long id) {
+    public Mono<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
     @Override
-    public List<User> findAll() {
+    public Flux<User> findAll() {
 
         return userRepository.findAll();
     }
 
     @Override
-    public User update(Long id, User updatedUser) {
+    public Mono<User> update(Long id, User user) {
         return userRepository.findById(id)
-                .map(existing -> {
-                    existing.setEmail(updatedUser.getEmail());
-                    existing.setPassword(updatedUser.getPassword());
-                    existing.setRole(updatedUser.getRole());
-                    existing.setFirstName(updatedUser.getFirstName());
-                    existing.setLastName(updatedUser.getLastName());
-                    existing.setBirthDate(updatedUser.getBirthDate());
-                    existing.setPhone(updatedUser.getPhone());
-                    return userRepository.save(existing);
-                })
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .flatMap(existing -> {
+                    user.setId(String.valueOf(id));
+                    return userRepository.save(user);
+                });
     }
 
     @Override
-    public void delete(Long id) {
+    public Mono<ResponseEntity<Void>> delete(Long id) {
         userRepository.deleteById(id);
+        return null;
     }
 }

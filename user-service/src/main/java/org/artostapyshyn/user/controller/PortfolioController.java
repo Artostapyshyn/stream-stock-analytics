@@ -3,10 +3,9 @@ package org.artostapyshyn.user.controller;
 import lombok.RequiredArgsConstructor;
 import org.artostapyshyn.user.model.Portfolio;
 import org.artostapyshyn.user.service.PortfolioService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/v1/portfolios")
@@ -16,30 +15,27 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
 
     @PostMapping
-    public ResponseEntity<Portfolio> createPortfolio(@RequestBody Portfolio portfolio) {
-        return ResponseEntity.ok(portfolioService.save(portfolio));
+    public Mono<Portfolio> createPortfolio(@RequestBody Portfolio portfolio) {
+        return portfolioService.save(portfolio);
     }
 
     @GetMapping
-    public ResponseEntity<List<Portfolio>> getAllPortfolios() {
-        return ResponseEntity.ok(portfolioService.findAll());
+    public Flux<Portfolio> getAllPortfolios() {
+        return portfolioService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Portfolio> getPortfolioById(@PathVariable String id) {
-        return portfolioService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public Mono<Portfolio> getPortfolioById(@PathVariable String id) {
+        return portfolioService.findById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Portfolio> updatePortfolio(@PathVariable String id, @RequestBody Portfolio portfolio) {
-        return ResponseEntity.ok(portfolioService.update(id, portfolio));
+    public Mono<Portfolio> updatePortfolio(@PathVariable String id, @RequestBody Portfolio portfolio) {
+        return portfolioService.update(id, portfolio);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePortfolio(@PathVariable String id) {
-        portfolioService.delete(id);
-        return ResponseEntity.noContent().build();
+    public Mono<Void> deletePortfolio(@PathVariable String id) {
+        return portfolioService.delete(id);
     }
 }

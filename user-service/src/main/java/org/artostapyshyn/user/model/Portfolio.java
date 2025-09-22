@@ -1,12 +1,13 @@
 package org.artostapyshyn.user.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.List;
 
 
-@Entity
 @Table(name = "portfolios")
 @Getter
 @Setter
@@ -16,17 +17,10 @@ import java.util.List;
 public class Portfolio {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
     private String name;
-
     private String description;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
     private User user;
-
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @MappedCollection(idColumn = "portfolio_id")
     private List<Stock> stocks;
 }

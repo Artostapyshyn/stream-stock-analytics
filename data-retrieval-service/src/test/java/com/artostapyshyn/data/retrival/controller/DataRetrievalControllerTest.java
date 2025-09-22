@@ -3,11 +3,13 @@ package com.artostapyshyn.data.retrival.controller;
 import com.artostapyshyn.data.retrival.service.DataRetrievalService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 class DataRetrievalControllerTest {
 
@@ -29,7 +31,7 @@ class DataRetrievalControllerTest {
 
         ResponseEntity<Object> response = controller.getData("func", "symb", "5min");
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertEquals("Test Data", response.getBody());
     }
 }

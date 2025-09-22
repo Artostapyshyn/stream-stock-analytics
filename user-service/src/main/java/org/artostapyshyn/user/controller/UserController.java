@@ -3,48 +3,46 @@ package org.artostapyshyn.user.controller;
 import lombok.RequiredArgsConstructor;
 import org.artostapyshyn.user.model.User;
 import org.artostapyshyn.user.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping(value = "/api/v1/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> save(@RequestBody User user) {
-        return ResponseEntity.ok(userService.save(user));
+    public Mono<ResponseEntity<User>> save(@RequestBody User user) {
+        return userService.save(user)
+                .map(savedUser -> ResponseEntity.status(HttpStatus.CREATED).body(savedUser));
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.findAll());
+    public Flux<User> getAllUsers() {
+        return userService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = userService.findById(id);
-        return user.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public Mono<ResponseEntity<User>> getUserById(@PathVariable Long id) {
+        return userService.findById(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        try {
-            return ResponseEntity.ok(userService.update(id, user));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public Mono<ResponseEntity<User>> updateUser(@PathVariable Long id, @RequestBody User user) {
+        return userService.update(id, user)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.delete(id);
-        return ResponseEntity.noContent().build();
+    public Mono<ResponseEntity<Void>> deleteUser(@PathVariable Long id) {
+        return userService.delete(id);
     }
 }

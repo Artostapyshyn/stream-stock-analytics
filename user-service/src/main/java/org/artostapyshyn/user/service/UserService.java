@@ -1,18 +1,18 @@
 package org.artostapyshyn.user.service;
 
 import org.artostapyshyn.user.model.User;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface UserService {
-    User save(User userVO);
+    Mono<User> save(User userVO);
 
-    Optional<User> findById(Long id);
+    Mono<User> findById(Long id);
 
-    List<User> findAll();
+    Flux<User> findAll();
 
-    User update(Long id, User updatedUser);
+    Mono<User> update(Long id, User updatedUser);
 
-    void delete(Long id);
+    Mono<ResponseEntity<Void>> delete(Long id);
 }

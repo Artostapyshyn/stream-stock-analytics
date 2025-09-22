@@ -12,6 +12,7 @@ import java.util.Date;
 
 @Service
 public class JwtUtils {
+
     @Value("${jwt.secret}")
     private String secret;
 
@@ -23,7 +24,7 @@ public class JwtUtils {
     }
 
     public Claims getClaims(String token) {
-        return Jwts.parser()
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
@@ -34,7 +35,7 @@ public class JwtUtils {
         try {
             return getClaims(token).getExpiration().before(new Date());
         } catch (Exception e) {
-            return false;
+            return true;
         }
     }
 }

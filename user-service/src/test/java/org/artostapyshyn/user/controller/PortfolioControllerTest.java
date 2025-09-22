@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class PortfolioControllerTest {
@@ -22,7 +22,7 @@ class PortfolioControllerTest {
         when(portfolioService.save(portfolio)).thenReturn(portfolio);
 
         ResponseEntity<Portfolio> response = controller.createPortfolio(portfolio);
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
     }
 
     @Test
@@ -39,7 +39,7 @@ class PortfolioControllerTest {
         when(portfolioService.findById("1")).thenReturn(Optional.of(p));
 
         ResponseEntity<Portfolio> response = controller.getPortfolioById("1");
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
     }
 
     @Test
@@ -47,7 +47,7 @@ class PortfolioControllerTest {
         when(portfolioService.findById("2")).thenReturn(Optional.empty());
 
         ResponseEntity<Portfolio> response = controller.getPortfolioById("2");
-        assertEquals(404, response.getStatusCodeValue());
+        assertEquals(404, response.getStatusCode().value());
     }
 
     @Test
@@ -56,7 +56,7 @@ class PortfolioControllerTest {
         when(portfolioService.update("1", updated)).thenReturn(updated);
 
         ResponseEntity<Portfolio> response = controller.updatePortfolio("1", updated);
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
     }
 
     @Test
@@ -64,6 +64,6 @@ class PortfolioControllerTest {
         doNothing().when(portfolioService).delete("1");
 
         ResponseEntity<Void> response = controller.deletePortfolio("1");
-        assertEquals(204, response.getStatusCodeValue());
+        assertEquals(204, response.getStatusCode().value());
     }
 }

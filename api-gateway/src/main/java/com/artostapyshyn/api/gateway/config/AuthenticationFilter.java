@@ -26,27 +26,23 @@ public class AuthenticationFilter implements GatewayFilter {
         ServerHttpRequest request = exchange.getRequest();
 
         if (validator.isSecured.test(request)) {
-            if (authIsMissing(request)) {
-                return onError(exchange, HttpStatus.UNAUTHORIZED);
+            if (!request.getHeaders().containsKey("Authorization")) {
+                return onError(exchange);
             }
 
             final String token = request.getHeaders().getOrEmpty("Authorization").getFirst();
 
             if (!jwtUtil.isExpired(token)) {
-                return onError(exchange, HttpStatus.UNAUTHORIZED);
+                return onError(exchange);
             }
 
         }
         return chain.filter(exchange);
     }
 
-    private Mono<Void> onError(ServerWebExchange exchange, HttpStatus httpStatus) {
+    private Mono<Void> onError(ServerWebExchange exchange) {
         ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(httpStatus);
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
         return response.setComplete();
-    }
-
-    private boolean authIsMissing(ServerHttpRequest request) {
-        return !request.getHeaders().containsKey("Authorization");
     }
 }

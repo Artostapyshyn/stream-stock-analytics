@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @AllArgsConstructor
@@ -17,26 +18,23 @@ public class StockDataServiceImpl implements StockDataService {
     private final MessageMapHolder messageMapHolder;
 
     @Override
-    public StockData parseJson(String json) throws JsonProcessingException {
-        return objectMapper.readValue(json, StockData.class);
+    public Mono<StockData> parseJson(String json) {
+        return Mono.fromCallable(() -> objectMapper.readValue(json, StockData.class));
     }
 
     @Override
-    public StockData getStockDataFromQueue(String requestId) {
-        
-        
-        String json = messageMapHolder.getStockDataMap().get(requestId);
+    public Mono<StockData> getStockDataFromQueue(String requestId) {
+        return Mono.defer(() -> {
+            String json = messageMapHolder.getStockDataMap().get(requestId);
 
-        if (json == null) {
-            throw new StockDataNotFoundException("Failed to get StockData from RabbitMQ");
-        }
+            if (json == null) {
+                return Mono.error(new StockDataNotFoundException("Failed to get StockData from RabbitMQ"));
+            }
 
-        StockData stockData;
-        try {
-            stockData = parseJson(json);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        return stockData;
+            return parseJson(json)
+                    .onErrorMap(JsonProcessingException.class, e ->
+                            new RuntimeException("Failed to parse JSON for StockData", e)
+                    );
+        });
     }
 }

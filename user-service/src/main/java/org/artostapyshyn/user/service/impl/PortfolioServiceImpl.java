@@ -5,9 +5,8 @@ import org.artostapyshyn.user.model.Portfolio;
 import org.artostapyshyn.user.repository.PortfolioRepository;
 import org.artostapyshyn.user.service.PortfolioService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +15,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     private final PortfolioRepository portfolioRepository;
 
     @Override
-    public Portfolio save(Portfolio portfolio) {
+    public Mono<Portfolio> save(Portfolio portfolio) {
         if (portfolio.getStocks() != null) {
             portfolio.getStocks().forEach(stock -> stock.setPortfolio(portfolio));
         }
@@ -24,17 +23,17 @@ public class PortfolioServiceImpl implements PortfolioService {
     }
 
     @Override
-    public List<Portfolio> findAll() {
+    public Flux<Portfolio> findAll() {
         return portfolioRepository.findAll();
     }
 
     @Override
-    public Optional<Portfolio> findById(String id) {
+    public Mono<Portfolio> findById(String id) {
         return portfolioRepository.findById(id);
     }
 
     @Override
-    public Portfolio update(String id, Portfolio updatedPortfolio) {
+    public Mono<Portfolio> update(String id, Portfolio updatedPortfolio) {
         return portfolioRepository.findById(id)
                 .map(existing -> {
                     existing.setName(updatedPortfolio.getName());
@@ -52,8 +51,9 @@ public class PortfolioServiceImpl implements PortfolioService {
     }
 
     @Override
-    public void delete(String id) {
+    public Mono<Void> delete(String id) {
         portfolioRepository.deleteById(id);
+        return null;
     }
 }
 

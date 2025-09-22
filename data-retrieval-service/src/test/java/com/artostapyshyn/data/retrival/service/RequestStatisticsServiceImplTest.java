@@ -5,9 +5,11 @@ import com.artostapyshyn.data.retrival.model.RequestStatistics;
 import com.artostapyshyn.data.retrival.service.impl.RequestStatisticsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
 class RequestStatisticsServiceImplTest {
 

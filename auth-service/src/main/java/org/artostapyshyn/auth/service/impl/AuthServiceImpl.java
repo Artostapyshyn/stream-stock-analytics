@@ -8,23 +8,38 @@ import org.artostapyshyn.auth.model.UserVO;
 import org.artostapyshyn.auth.service.AuthService;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
     private final JwtUtil jwtUtil;
 
     @Override
-    public AuthResponse register(AuthRequest request) {
+    public Mono<AuthResponse> register(AuthRequest request) {
         request.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
-        UserVO registeredUser = restTemplate.postForObject("http://user-service/api/v1/users", request, UserVO.class);
 
-        String accessToken = jwtUtil.generateToken(registeredUser.getId(), registeredUser.getRole(), "ACCESS");
-        String refreshToken = jwtUtil.generateToken(registeredUser.getId(), registeredUser.getRole(), "REFRESH");
+        return webClient.post()
+                .uri("http://user-service/api/v1/users")
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(UserVO.class)
+                .map(registeredUser -> {
+                    String accessToken = jwtUtil.generateToken(
+                            registeredUser.getId(),
+                            registeredUser.getRole(),
+                            "ACCESS"
+                    );
+                    String refreshToken = jwtUtil.generateToken(
+                            registeredUser.getId(),
+                            registeredUser.getRole(),
+                            "REFRESH"
+                    );
 
-        return new AuthResponse(accessToken, refreshToken);
+                    return new AuthResponse(accessToken, refreshToken);
+                });
     }
 }

@@ -23,7 +23,7 @@ class AuthControllerTest {
 
         ResponseEntity<AuthResponse> result = authController.register(request);
 
-        assertEquals(200, result.getStatusCodeValue());
+        assertEquals(200, result.getStatusCode().value());
         assertEquals("access-token", result.getBody().getAccessToken());
         assertEquals("refresh-token", result.getBody().getRefreshToken());
     }
