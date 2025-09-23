@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static com.artostapyshyn.data.analysis.util.DataUtil.generateFixedStockData;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class IndicatorCalculationServiceTest {
 
@@ -23,42 +24,48 @@ class IndicatorCalculationServiceTest {
     @Test
     void testCalculateAveragePrice() {
         StockData stockData = generateFixedStockData();
-        Map<String, BigDecimal> averagePrices = indicatorService.calculateAveragePrice(stockData);
+        Map<String, BigDecimal> averagePrices = indicatorService.calculateAveragePrice(stockData).block();
+        assertNotNull(averagePrices);
         assertEquals(BigDecimal.valueOf(90.0), averagePrices.get("2022-01-01"));
     }
 
     @Test
     void testCalculateAverageVolume() {
         StockData stockData = generateFixedStockData();
-        Map<String, BigDecimal> averageVolumes = indicatorService.calculateAverageVolume(stockData);
-        assertEquals(BigDecimal.valueOf(750.0), averageVolumes.get("2022-01-01"), String.valueOf(0.001));
+        Map<String, BigDecimal> averageVolumes = indicatorService.calculateAverageVolume(stockData).block();
+        assertNotNull(averageVolumes);
+        assertEquals(BigDecimal.valueOf(750.0), averageVolumes.get("2022-01-01"));
     }
 
     @Test
     void testCalculatePercentagePriceChange() {
         StockData stockData = generateFixedStockData();
-        Map<String, BigDecimal> percentagePriceChanges = indicatorService.calculatePercentagePriceChange(stockData);
-        assertEquals(BigDecimal.valueOf(100), percentagePriceChanges.get("2022-01-01"));
+        Map<String, BigDecimal> percentagePriceChanges = indicatorService.calculatePercentagePriceChange(stockData).block();
+        assertNotNull(percentagePriceChanges);
+        assertEquals(BigDecimal.valueOf(100.00), percentagePriceChanges.get("2022-01-01"));
     }
 
     @Test
     void testCalculatePriceChange() {
         StockData stockData = generateFixedStockData();
-        Map<String, BigDecimal> priceChanges = indicatorService.calculatePriceChange(stockData);
+        Map<String, BigDecimal> priceChanges = indicatorService.calculatePriceChange(stockData).block();
+        assertNotNull(priceChanges);
         assertEquals(BigDecimal.valueOf(50.0), priceChanges.get("2022-01-01"));
     }
 
     @Test
     void testCalculateMinPrice() {
         StockData stockData = generateFixedStockData();
-        Map<String, BigDecimal> minPrices = indicatorService.calculateMinPrice(stockData);
+        Map<String, BigDecimal> minPrices = indicatorService.calculateMinPrice(stockData).block();
+        assertNotNull(minPrices);
         assertEquals(BigDecimal.valueOf(50.0), minPrices.get("2022-01-01"));
     }
 
     @Test
     void testCalculateMaxPrice() {
         StockData stockData = generateFixedStockData();
-        Map<String, BigDecimal> maxPrices = indicatorService.calculateMaxPrice(stockData);
+        Map<String, BigDecimal> maxPrices = indicatorService.calculateMaxPrice(stockData).block();
+        assertNotNull(maxPrices);
         assertEquals(BigDecimal.valueOf(100.0), maxPrices.get("2022-01-01"));
     }
 }

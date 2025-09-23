@@ -3,8 +3,6 @@ package org.artostapyshyn.user.controller;
 import lombok.RequiredArgsConstructor;
 import org.artostapyshyn.user.model.User;
 import org.artostapyshyn.user.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,9 +15,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public Mono<ResponseEntity<User>> save(@RequestBody User user) {
-        return userService.save(user)
-                .map(savedUser -> ResponseEntity.status(HttpStatus.CREATED).body(savedUser));
+    public Mono<User> save(@RequestBody User user) {
+        return userService.save(user);
     }
 
     @GetMapping
@@ -28,21 +25,17 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<User>> getUserById(@PathVariable Long id) {
-        return userService.findById(id)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+    public Mono<User> getUserById(@PathVariable Long id) {
+        return userService.findById(id);
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<User>> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.update(id, user)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+    public Mono<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+        return userService.update(id, user);
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Void>> deleteUser(@PathVariable Long id) {
+    public Mono<Void> deleteUser(@PathVariable Long id) {
         return userService.delete(id);
     }
 }

@@ -2,14 +2,14 @@ package com.artostapyshyn.data.retrival.controller;
 
 import com.artostapyshyn.data.retrival.service.DataRetrievalService;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/data-retrieval")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DataRetrievalController {
 
     private final DataRetrievalService dataRetrievalService;

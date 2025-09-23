@@ -9,9 +9,9 @@ public interface PortfolioService {
 
     Flux<Portfolio> findAll();
 
-    Mono<Portfolio> findById(String id);
+    Mono<Portfolio> findById(Long id);
 
-    Mono<Portfolio> update(String id, Portfolio updatedPortfolio);
+    Mono<Portfolio> update(Long id, Portfolio updatedPortfolio);
 
-    Mono<Void> delete(String id);
+    Mono<Void> delete(Long id);
 }

@@ -11,7 +11,7 @@ import org.springframework.data.annotation.Id;
 public class Stock {
 
     @Id
-    private String id;
+    private Long id;
     private String ticker;
     private String companyName;
     private int quantity;

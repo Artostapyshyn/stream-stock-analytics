@@ -28,14 +28,14 @@ public class PortfolioServiceImpl implements PortfolioService {
     }
 
     @Override
-    public Mono<Portfolio> findById(String id) {
+    public Mono<Portfolio> findById(Long id) {
         return portfolioRepository.findById(id);
     }
 
     @Override
-    public Mono<Portfolio> update(String id, Portfolio updatedPortfolio) {
+    public Mono<Portfolio> update(Long id, Portfolio updatedPortfolio) {
         return portfolioRepository.findById(id)
-                .map(existing -> {
+                .flatMap(existing -> {
                     existing.setName(updatedPortfolio.getName());
                     existing.setDescription(updatedPortfolio.getDescription());
                     existing.getStocks().clear();
@@ -46,12 +46,11 @@ public class PortfolioServiceImpl implements PortfolioService {
                         });
                     }
                     return portfolioRepository.save(existing);
-                })
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+                });
     }
 
     @Override
-    public Mono<Void> delete(String id) {
+    public Mono<Void> delete(Long id) {
         portfolioRepository.deleteById(id);
         return null;
     }

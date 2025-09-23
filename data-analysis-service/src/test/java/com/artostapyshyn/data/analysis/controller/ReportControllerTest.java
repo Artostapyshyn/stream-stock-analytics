@@ -1,4 +1,3 @@
-
 package com.artostapyshyn.data.analysis.controller;
 
 import com.artostapyshyn.data.analysis.dto.ReportRequestDTO;
@@ -8,11 +7,12 @@ import com.artostapyshyn.data.analysis.service.StockDataService;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,10 +33,11 @@ class ReportControllerTest {
             }
         };
 
-        when(stockDataService.getStockDataFromQueue(dto.requestId())).thenReturn(mockData);
-        when(reportService.generateReport(mockData, dto.format(), dto.indicators())).thenReturn(mockResource);
+        when(stockDataService.getStockDataFromQueue(dto.requestId())).thenReturn(Mono.just(mockData));
+        when(reportService.generateReport(mockData, dto.format(), dto.indicators())).thenReturn(Mono.just(mockResource));
 
-        ResponseEntity<Resource> response = controller.generateReport(dto);
-        assertEquals("report.pdf", response.getBody().getFilename());
+        Resource response = controller.generateReport(dto).block();
+        assertNotNull(response);
+        assertEquals("report.pdf", response.getFilename());
     }
 }

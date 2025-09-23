@@ -17,7 +17,7 @@ import java.util.List;
 public class Portfolio {
 
     @Id
-    private String id;
+    private Long id;
     private String name;
     private String description;
     private User user;

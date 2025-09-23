@@ -25,17 +25,17 @@ public class PortfolioController {
     }
 
     @GetMapping("/{id}")
-    public Mono<Portfolio> getPortfolioById(@PathVariable String id) {
+    public Mono<Portfolio> getPortfolioById(@PathVariable Long id) {
         return portfolioService.findById(id);
     }
 
     @PutMapping("/{id}")
-    public Mono<Portfolio> updatePortfolio(@PathVariable String id, @RequestBody Portfolio portfolio) {
+    public Mono<Portfolio> updatePortfolio(@PathVariable Long id, @RequestBody Portfolio portfolio) {
         return portfolioService.update(id, portfolio);
     }
 
     @DeleteMapping("/{id}")
-    public Mono<Void> deletePortfolio(@PathVariable String id) {
+    public Mono<Void> deletePortfolio(@PathVariable Long id) {
         return portfolioService.delete(id);
     }
 }

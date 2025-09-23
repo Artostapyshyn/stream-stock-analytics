@@ -5,6 +5,7 @@ import com.artostapyshyn.data.analysis.exceptions.handler.GlobalExceptionHandler
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,7 +19,8 @@ class GlobalExceptionHandlerTest {
         String message = "Data not found in queue";
         StockDataNotFoundException ex = new StockDataNotFoundException(message);
 
-        ResponseEntity<ErrorResponse> response = exceptionHandler.handleStockDataNotFoundException(ex);
+        Mono<ResponseEntity<ErrorResponse>> responseMono = exceptionHandler.handleStockDataNotFoundException(ex);
+        ResponseEntity<ErrorResponse> response = responseMono.block();
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -30,11 +32,11 @@ class GlobalExceptionHandlerTest {
         String message = "Unexpected error occurred";
         Exception ex = new RuntimeException(message);
 
-        ResponseEntity<ErrorResponse> response = exceptionHandler.handleException(ex);
+        Mono<ResponseEntity<ErrorResponse>> responseMono = exceptionHandler.handleException(ex);
+        ResponseEntity<ErrorResponse> response = responseMono.block();
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Unexpected error occurred", response.getBody().getMessage());
     }
 }
-

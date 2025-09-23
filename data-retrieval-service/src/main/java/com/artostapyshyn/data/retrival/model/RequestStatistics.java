@@ -17,8 +17,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class RequestStatistics {
     @Id
-    private ObjectId id;
+    private Long id;
     private String requestType;
     private LocalDateTime timestamp;
-    private long responseTime;
+    private Long responseTime;
 }

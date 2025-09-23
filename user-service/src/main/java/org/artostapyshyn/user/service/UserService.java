@@ -1,7 +1,6 @@
 package org.artostapyshyn.user.service;
 
 import org.artostapyshyn.user.model.User;
-import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,5 +13,5 @@ public interface UserService {
 
     Mono<User> update(Long id, User updatedUser);
 
-    Mono<ResponseEntity<Void>> delete(Long id);
+    Mono<Void> delete(Long id);
 }

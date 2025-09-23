@@ -3,12 +3,12 @@ package org.artostapyshyn.user.controller;
 import org.artostapyshyn.user.model.Portfolio;
 import org.artostapyshyn.user.service.PortfolioService;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class PortfolioControllerTest {
@@ -19,51 +19,54 @@ class PortfolioControllerTest {
     @Test
     void testCreatePortfolio() {
         Portfolio portfolio = new Portfolio();
-        when(portfolioService.save(portfolio)).thenReturn(portfolio);
+        when(portfolioService.save(portfolio)).thenReturn(Mono.just(portfolio));
 
-        ResponseEntity<Portfolio> response = controller.createPortfolio(portfolio);
-        assertEquals(200, response.getStatusCode().value());
+        Portfolio result = controller.createPortfolio(portfolio).block();
+        assertEquals(portfolio, result);
     }
 
     @Test
     void testGetAllPortfolios() {
-        when(portfolioService.findAll()).thenReturn(List.of(new Portfolio()));
+        when(portfolioService.findAll()).thenReturn(Flux.just(new Portfolio()));
 
-        ResponseEntity<List<Portfolio>> response = controller.getAllPortfolios();
-        assertEquals(1, response.getBody().size());
+        List<Portfolio> result = controller.getAllPortfolios().collectList().block();
+        assertNotNull(result);
+        assertEquals(1, result.size());
     }
 
     @Test
     void testGetPortfolioById_found() {
         Portfolio p = new Portfolio();
-        when(portfolioService.findById("1")).thenReturn(Optional.of(p));
+        when(portfolioService.findById(5L)).thenReturn(Mono.just(p));
 
-        ResponseEntity<Portfolio> response = controller.getPortfolioById("1");
-        assertEquals(200, response.getStatusCode().value());
+        Portfolio result = controller.getPortfolioById(5L).block();
+        assertNotNull(result);
+        assertEquals(p, result);
     }
 
     @Test
     void testGetPortfolioById_notFound() {
-        when(portfolioService.findById("2")).thenReturn(Optional.empty());
+        when(portfolioService.findById(5L)).thenReturn(Mono.empty());
 
-        ResponseEntity<Portfolio> response = controller.getPortfolioById("2");
-        assertEquals(404, response.getStatusCode().value());
+        Portfolio result = controller.getPortfolioById(5L).block();
+        assertNull(result);
     }
 
     @Test
     void testUpdatePortfolio() {
         Portfolio updated = new Portfolio();
-        when(portfolioService.update("1", updated)).thenReturn(updated);
+        when(portfolioService.update(5L, updated)).thenReturn(Mono.just(updated));
 
-        ResponseEntity<Portfolio> response = controller.updatePortfolio("1", updated);
-        assertEquals(200, response.getStatusCode().value());
+        Portfolio result = controller.updatePortfolio(5L, updated).block();
+        assertNotNull(result);
+        assertEquals(updated, result);
     }
 
     @Test
     void testDeletePortfolio() {
-        doNothing().when(portfolioService).delete("1");
+        when(portfolioService.delete(5L)).thenReturn(Mono.empty());
 
-        ResponseEntity<Void> response = controller.deletePortfolio("1");
-        assertEquals(204, response.getStatusCode().value());
+        controller.deletePortfolio(5L).block();
+        verify(portfolioService, times(1)).delete(5L);
     }
 }

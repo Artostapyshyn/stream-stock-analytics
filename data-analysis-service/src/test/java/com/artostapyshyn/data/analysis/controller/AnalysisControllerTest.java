@@ -5,7 +5,7 @@ import com.artostapyshyn.data.analysis.service.IndicatorCalculationService;
 import com.artostapyshyn.data.analysis.service.StockDataService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -30,48 +30,48 @@ class AnalysisControllerTest {
         controller = new AnalysisController(indicatorService, stockDataService);
         mockStockData = new StockData();
 
-        when(stockDataService.getStockDataFromQueue(requestId)).thenReturn(mockStockData);
+        when(stockDataService.getStockDataFromQueue(requestId)).thenReturn(Mono.just(mockStockData));
     }
 
     @Test
     void calculateAveragePrice_ShouldReturnResult() {
-        when(indicatorService.calculateAveragePrice(mockStockData)).thenReturn(mockResult);
-        ResponseEntity<Object> response = controller.calculateAveragePrice(requestId);
-        assertEquals(mockResult, response.getBody());
+        when(indicatorService.calculateAveragePrice(mockStockData)).thenReturn(Mono.just(mockResult));
+        Map<String, BigDecimal> response = controller.calculateAveragePrice(requestId).block();
+        assertEquals(mockResult, response);
     }
 
     @Test
     void calculatePriceChange_ShouldReturnResult() {
-        when(indicatorService.calculatePriceChange(mockStockData)).thenReturn(mockResult);
-        ResponseEntity<Object> response = controller.calculatePriceChange(requestId);
-        assertEquals(mockResult, response.getBody());
+        when(indicatorService.calculatePriceChange(mockStockData)).thenReturn(Mono.just(mockResult));
+        Map<String, BigDecimal> response = controller.calculatePriceChange(requestId).block();
+        assertEquals(mockResult, response);
     }
 
     @Test
     void calculatePercentagePriceChange_ShouldReturnResult() {
-        when(indicatorService.calculatePercentagePriceChange(mockStockData)).thenReturn(mockResult);
-        ResponseEntity<Object> response = controller.calculatePercentagePriceChange(requestId);
-        assertEquals(mockResult, response.getBody());
+        when(indicatorService.calculatePercentagePriceChange(mockStockData)).thenReturn(Mono.just(mockResult));
+        Map<String, BigDecimal> response = controller.calculatePercentagePriceChange(requestId).block();
+        assertEquals(mockResult, response);
     }
 
     @Test
     void calculateAverageVolume_ShouldReturnResult() {
-        when(indicatorService.calculateAverageVolume(mockStockData)).thenReturn(mockResult);
-        ResponseEntity<Object> response = controller.calculateAverageVolume(requestId);
-        assertEquals(mockResult, response.getBody());
+        when(indicatorService.calculateAverageVolume(mockStockData)).thenReturn(Mono.just(mockResult));
+        Map<String, BigDecimal> response = controller.calculateAverageVolume(requestId).block();
+        assertEquals(mockResult, response);
     }
 
     @Test
     void calculateMinPrice_ShouldReturnResult() {
-        when(indicatorService.calculateMinPrice(mockStockData)).thenReturn(mockResult);
-        ResponseEntity<Object> response = controller.calculateMinPrice(requestId);
-        assertEquals(mockResult, response.getBody());
+        when(indicatorService.calculateMinPrice(mockStockData)).thenReturn(Mono.just(mockResult));
+        Map<String, BigDecimal> response = controller.calculateMinPrice(requestId).block();
+        assertEquals(mockResult, response);
     }
 
     @Test
     void calculateMaxPrice_ShouldReturnResult() {
-        when(indicatorService.calculateMaxPrice(mockStockData)).thenReturn(mockResult);
-        ResponseEntity<Object> response = controller.calculateMaxPrice(requestId);
-        assertEquals(mockResult, response.getBody());
+        when(indicatorService.calculateMaxPrice(mockStockData)).thenReturn(Mono.just(mockResult));
+        Map<String, BigDecimal> response = controller.calculateMaxPrice(requestId).block();
+        assertEquals(mockResult, response);
     }
 }

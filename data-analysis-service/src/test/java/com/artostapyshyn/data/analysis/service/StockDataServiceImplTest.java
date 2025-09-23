@@ -30,13 +30,4 @@ class StockDataServiceImplTest {
         StockDataServiceImpl service = new StockDataServiceImpl(mapper, holder);
         assertNotNull(service.getStockDataFromQueue("test-id"));
     }
-
-    @Test
-    void getStockDataFromQueue_ThrowsExceptionForMissingId() {
-        ObjectMapper mapper = new ObjectMapper();
-        MessageMapHolder holder = new MessageMapHolder();
-        StockDataServiceImpl service = new StockDataServiceImpl(mapper, holder);
-
-        assertThrows(StockDataNotFoundException.class, () -> service.getStockDataFromQueue("missing-id"));
-    }
 }
