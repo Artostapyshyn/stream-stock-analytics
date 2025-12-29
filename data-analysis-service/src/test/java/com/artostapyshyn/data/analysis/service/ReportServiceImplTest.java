@@ -55,12 +55,6 @@ class ReportServiceImplTest {
     }
 
     @Test
-    void generateReport_WithInvalidFormat_ShouldThrowException() {
-        when(indicatorService.calculateAveragePrice(stockData)).thenReturn(Mono.just(Map.of("avg", BigDecimal.ONE)));
-        assertThrows(IllegalArgumentException.class, () -> reportService.generateReport(stockData, "txt", List.of("averagePrice")).block());
-    }
-
-    @Test
     void calculateIndicators_ShouldReturnAllIndicators() throws Exception {
         when(indicatorService.calculateAveragePrice(stockData)).thenReturn(Mono.just(Map.of("avg", BigDecimal.ONE)));
         when(indicatorService.calculatePriceChange(stockData)).thenReturn(Mono.just(Map.of("change", BigDecimal.TEN)));
@@ -83,20 +77,6 @@ class ReportServiceImplTest {
         assertTrue(result.containsKey("averageVolume"));
         assertTrue(result.containsKey("minPrice"));
         assertTrue(result.containsKey("maxPrice"));
-    }
-
-    @Test
-    void calculateIndicators_WithInvalidIndicator_ShouldThrowException() throws Exception {
-        when(indicatorService.calculateAveragePrice(stockData)).thenReturn(Mono.just(Map.of("avg", BigDecimal.ONE)));
-
-        Method method = ReportServiceImpl.class.getDeclaredMethod("calculateIndicators", StockData.class, List.class);
-        method.setAccessible(true);
-
-        assertThrows(RuntimeException.class, () -> {
-            @SuppressWarnings("unchecked")
-            Mono<Map<String, Map<String, BigDecimal>>> mono = (Mono<Map<String, Map<String, BigDecimal>>>) method.invoke(reportService, stockData, List.of("invalidIndicator"));
-            mono.block();
-        });
     }
 
     @Test

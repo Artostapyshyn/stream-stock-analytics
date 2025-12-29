@@ -7,7 +7,8 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 
@@ -20,18 +21,22 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private String expiration;
 
-    private Key key;
+    private SecretKey key;
 
     @PostConstruct
-    public void initKey(){
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    public void initKey() {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public Claims getClaims(String token){
-        return Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    public Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    public Date getExpirationDate(String token){
+    public Date getExpirationDate(String token) {
         return getClaims(token).getExpiration();
     }
 
@@ -45,10 +50,10 @@ public class JwtUtil {
         final Date exp = new Date(now.getTime() + expMillis);
 
         return Jwts.builder()
-                .setSubject(claims.get("id"))
-                .setClaims(claims)
-                .setExpiration(exp)
-                .setIssuedAt(now)
+                .subject(claims.get("id"))
+                .claims(claims)
+                .expiration(exp)
+                .issuedAt(now)
                 .signWith(key)
                 .compact();
     }

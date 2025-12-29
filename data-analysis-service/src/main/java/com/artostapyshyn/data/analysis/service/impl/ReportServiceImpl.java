@@ -1,5 +1,6 @@
 package com.artostapyshyn.data.analysis.service.impl;
 
+import com.artostapyshyn.data.analysis.exceptions.ReportGenerationException;
 import com.artostapyshyn.data.analysis.model.StockData;
 import com.artostapyshyn.data.analysis.service.IndicatorCalculationService;
 import com.artostapyshyn.data.analysis.service.ReportService;
@@ -59,27 +60,19 @@ public class ReportServiceImpl implements ReportService {
             document.add(new Paragraph("Time Zone: " + stockData.getMetaData().getTimeZone()));
             document.add(new Paragraph("\n"));
 
-            indicatorResults.forEach((indicator, values) -> {
-                try {
-                    document.add(new Paragraph(indicator));
-                    values.forEach((key, value) -> {
-                        try {
-                            document.add(new Paragraph(key + ": " + value));
-                        } catch (DocumentException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                    document.add(new Paragraph("\n"));
-                } catch (DocumentException e) {
-                    throw new RuntimeException(e);
+            for (Map.Entry<String, Map<String, BigDecimal>> indicatorEntry : indicatorResults.entrySet()) {
+                document.add(new Paragraph(indicatorEntry.getKey()));
+                for (Map.Entry<String, BigDecimal> valueEntry : indicatorEntry.getValue().entrySet()) {
+                    document.add(new Paragraph(valueEntry.getKey() + ": " + valueEntry.getValue()));
                 }
-            });
+                document.add(new Paragraph("\n"));
+            }
 
             document.close();
             return createResource(outputStream.toByteArray(), "report.pdf");
         } catch (IOException | DocumentException e) {
             log.error("Error generating PDF report", e);
-            throw new RuntimeException(e);
+            throw new ReportGenerationException("Failed to generate PDF report", e);
         }
     }
 
@@ -113,7 +106,7 @@ public class ReportServiceImpl implements ReportService {
             return createResource(outputStream.toByteArray(), "report.xlsx");
         } catch (IOException e) {
             log.error("Error generating XLSX report", e);
-            throw new RuntimeException(e);
+            throw new ReportGenerationException("Failed to generate XLSX report", e);
         }
     }
 

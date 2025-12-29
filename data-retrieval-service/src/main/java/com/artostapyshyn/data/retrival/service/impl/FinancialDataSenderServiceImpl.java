@@ -16,9 +16,9 @@ public class FinancialDataSenderServiceImpl implements FinancialDataSenderServic
 
     @Override
     public void sendFinancialData(String data, String requestId) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(TOPIC, data);
-        record.headers().add(new RecordHeader("requestId", requestId.getBytes()));
-        kafkaTemplate.send(record);
+        ProducerRecord<String, String> prodRecord = new ProducerRecord<>(TOPIC, data);
+        prodRecord.headers().add(new RecordHeader("requestId", requestId.getBytes()));
+        kafkaTemplate.send(prodRecord);
     }
 }
 
