@@ -26,7 +26,7 @@ public class AuthenticationFilter implements GatewayFilter {
         ServerHttpRequest request = exchange.getRequest();
 
         if (validator.isSecured.test(request)) {
-            if (!request.getHeaders().containsKey("Authorization")) {
+            if (request.getHeaders().getOrEmpty("Authorization").isEmpty()) {
                 return onError(exchange);
             }
 

@@ -2,7 +2,6 @@
 package com.artostapyshyn.data.analysis.service;
 
 import com.artostapyshyn.data.analysis.config.MessageMapHolder;
-import com.artostapyshyn.data.analysis.exceptions.StockDataNotFoundException;
 import com.artostapyshyn.data.analysis.model.StockData;
 import com.artostapyshyn.data.analysis.service.impl.StockDataServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StockDataServiceImplTest {
 

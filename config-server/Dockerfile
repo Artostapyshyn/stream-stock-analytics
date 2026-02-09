@@ -1,10 +1,6 @@
-FROM maven:3-eclipse-temurin-21 AS build
-COPY . .
-RUN mvn clean package -DskipTests
-
-FROM openjdk:21-jdk
-COPY --from=build /target/config-server-0.0.1-SNAPSHOT.jar app.jar
-COPY /src/main/resources/application.yml /usr/app/
+FROM eclipse-temurin:21-jdk
+COPY target/config-server-0.0.1-SNAPSHOT.jar app.jar
+COPY src/main/resources/application.yml /usr/app/
 
 EXPOSE 8101
 

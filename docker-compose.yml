@@ -1,11 +1,10 @@
-version: '3.8'
 
 networks:
   microservices-network:
 
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.3.0
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -16,21 +15,23 @@ services:
       - microservices-network
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.3.0
+    container_name: kafka
     environment:
       KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_PROCESS_ROLES: broker
-      CONFLUENT_SUPPORT_METRICS_ENABLE: 'false'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
     ports:
       - "9092:9092"
     networks:
       - microservices-network
-  
+
   mongo:
     image: "mongo:6.0"
     container_name: mongo
@@ -39,14 +40,10 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongo-data:/data/db
     networks:
       - microservices-network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh --quiet mongodb://root:password@mongo:27017/db || exit 1
-      interval: 10s
-      retries: 5
-      start_period: 10s
-      timeout: 5s
 
   postgres:
     image: "postgres:15"
@@ -57,10 +54,12 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - microservices-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U user -d postgres" ]
       interval: 10s
       retries: 5
       start_period: 10s
@@ -71,26 +70,42 @@ services:
     ports:
       - "8101:8101"
     depends_on:
-      - kafka
+      kafka:
+        condition: service_started
     networks:
       - microservices-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8101/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   discovery-server:
     build: ./discovery-server
     ports:
       - "8001:8001"
     depends_on:
-      - config-server
+      config-server:
+        condition: service_healthy
     networks:
       - microservices-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   api-gateway:
     build: ./api-gateway
     ports:
       - "8080:8080"
     depends_on:
-      - config-server
-      - discovery-server
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
     networks:
       - microservices-network
 
@@ -99,9 +114,12 @@ services:
     ports:
       - "9002:9002"
     depends_on:
-      - config-server
-      - discovery-server
-      - postgres
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     networks:
       - microservices-network
 
@@ -110,9 +128,12 @@ services:
     ports:
       - "9003:9003"
     depends_on:
-      - config-server
-      - discovery-server
-      - postgres
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     networks:
       - microservices-network
 
@@ -121,10 +142,14 @@ services:
     ports:
       - "9000:9000"
     depends_on:
-      - config-server
-      - discovery-server
-      - mongo
-      - kafka
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_started
     networks:
       - microservices-network
 
@@ -133,10 +158,14 @@ services:
     ports:
       - "9004:9004"
     depends_on:
-      - config-server
-      - discovery-server
-      - mongo
-      - kafka
+      config-server:
+        condition: service_healthy
+      discovery-server:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_started
     networks:
       - microservices-network
 
@@ -146,7 +175,8 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./docker-config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
     networks:
       - microservices-network
 
@@ -159,5 +189,43 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
+      - loki
+      - tempo
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker-config/grafana/provisioning:/etc/grafana/provisioning
     networks:
       - microservices-network
+
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/loki-config.yaml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./docker-config/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      - loki-data:/loki
+    user: "0"
+    networks:
+      - microservices-network
+
+  tempo:
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./docker-config/tempo/tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/var/tempo
+    ports:
+      - "3200:3200"
+      - "9411:9411"
+    networks:
+      - microservices-network
+
+volumes:
+  mongo-data:
+  postgres-data:
+  prometheus-data:
+  grafana-data:
+  loki-data:
+  tempo-data:
+

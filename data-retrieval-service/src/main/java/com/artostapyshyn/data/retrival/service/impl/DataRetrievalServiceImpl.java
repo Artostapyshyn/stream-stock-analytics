@@ -33,7 +33,7 @@ public class DataRetrievalServiceImpl implements DataRetrievalService {
 
     @Override
     public Mono<Object> getData(String function, String symbol, String interval) {
-        String uri = UriComponentsBuilder.fromHttpUrl(URL)
+        String uri = UriComponentsBuilder.fromUriString(URL)
                 .queryParam("function", function)
                 .queryParam("symbol", symbol)
                 .queryParam("interval", interval)

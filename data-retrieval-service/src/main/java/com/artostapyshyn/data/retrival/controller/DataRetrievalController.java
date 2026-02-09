@@ -15,7 +15,7 @@ public class DataRetrievalController {
     private final DataRetrievalService dataRetrievalService;
 
     @Operation(summary = "Get data from Alpha Vantage API")
-    @GetMapping("/get")
+    @GetMapping("/get-data")
     public Mono<Object> getData(@RequestParam String function,
                                 @RequestParam String symbol,
                                 @RequestParam String interval) {
