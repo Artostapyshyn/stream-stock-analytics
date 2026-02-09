@@ -1,6 +1,8 @@
 package org.artostapyshyn.user.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.artostapyshyn.user.dto.UserRequestDto;
+import org.artostapyshyn.user.dto.UserResponseDto;
 import org.artostapyshyn.user.model.User;
 import org.artostapyshyn.user.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -15,23 +17,23 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public Mono<User> save(@RequestBody User user) {
-        return userService.save(user);
+    public Mono<User> save(@RequestBody UserRequestDto userDto) {
+        return userService.save(userDto);
     }
 
     @GetMapping
-    public Flux<User> getAllUsers() {
+    public Flux<UserResponseDto> getAllUsers() {
         return userService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Mono<User> getUserById(@PathVariable Long id) {
+    public Mono<UserResponseDto> getUserById(@PathVariable Long id) {
         return userService.findById(id);
     }
 
     @PutMapping("/{id}")
-    public Mono<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.update(id, user);
+    public Mono<UserResponseDto> updateUser(@PathVariable Long id, @RequestBody UserRequestDto userDto) {
+        return userService.update(id, userDto);
     }
 
     @DeleteMapping("/{id}")
