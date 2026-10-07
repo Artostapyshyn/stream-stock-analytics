@@ -27,7 +27,7 @@ public class ReactiveKafkaConsumerConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         return ReceiverOptions.<String, String>create(props)
-                .subscription(Collections.singleton("financial-data-topic"));
+                .subscription(Collections.singleton("market.quotes.raw.v1"));
     }
 
     @Bean

@@ -18,7 +18,7 @@ public class FinancialDataSenderServiceImpl implements FinancialDataSenderServic
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final KafkaSender<String, String> kafkaSender;
-    private static final String TOPIC = "financial-data-topic";
+    private static final String TOPIC = "market.quotes.raw.v1";
 
     public FinancialDataSenderServiceImpl(KafkaTemplate<String, String> kafkaTemplate,
                                           KafkaSender<String, String> kafkaSender) {

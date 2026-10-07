@@ -19,8 +19,6 @@ import java.util.Map;
 @EnableKafka
 public class KafkaConfig {
 
-    public static final String FINANCIAL_DATA_TOPIC = "financial-data-topic";
-
     @Value("${spring.kafka.bootstrap-servers:kafka:9092}")
     private String bootstrapServers;
 
@@ -28,14 +26,6 @@ public class KafkaConfig {
     public NewTopic rawQuotesTopic() {
         return TopicBuilder.name("market.quotes.raw.v1")
                 .partitions(6)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic financialDataTopic() {
-        return TopicBuilder.name(FINANCIAL_DATA_TOPIC)
-                .partitions(3)
                 .replicas(1)
                 .build();
     }

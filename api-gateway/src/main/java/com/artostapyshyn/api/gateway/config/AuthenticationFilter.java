@@ -19,13 +19,11 @@ public class AuthenticationFilter implements GatewayFilter {
 
     private final JwtUtils jwtUtil;
 
-    private final RouterValidator validator;
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
 
-        if (validator.isSecured.test(request)) {
+        if (RouterValidator.isSecured.test(request)) {
             if (request.getHeaders().getOrEmpty("Authorization").isEmpty()) {
                 return onError(exchange);
             }
