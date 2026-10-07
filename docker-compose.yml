@@ -1,4 +1,18 @@
 
+x-microservice-resources: &microservice-resources
+  deploy:
+    resources:
+      limits:
+        cpus: "2.0"
+        memory: 2G
+
+x-infrastructure-resources: &infrastructure-resources
+  deploy:
+    resources:
+      limits:
+        cpus: "2.0"
+        memory: 2G
+
 networks:
   microservices-network:
 
@@ -6,6 +20,7 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
     container_name: zookeeper
+    <<: *infrastructure-resources
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -17,6 +32,7 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.3.0
     container_name: kafka
+    <<: *infrastructure-resources
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -52,8 +68,9 @@ services:
       start_period: 10s
 
   postgres:
-    image: "postgres:15"
+    image: "postgres:16"
     container_name: postgres
+    <<: *infrastructure-resources
     ports:
       - "5432:5432"
     environment:
@@ -73,8 +90,10 @@ services:
 
   config-server:
     build: ./config-server
+    <<: *microservice-resources
     ports:
       - "8101:8101"
+      - "9012:9012"
     depends_on:
       kafka:
         condition: service_started
@@ -89,8 +108,10 @@ services:
 
   discovery-server:
     build: ./discovery-server
+    <<: *microservice-resources
     ports:
       - "8001:8001"
+      - "9010:9010"
     depends_on:
       config-server:
         condition: service_healthy
@@ -105,8 +126,10 @@ services:
 
   api-gateway:
     build: ./api-gateway
+    <<: *microservice-resources
     ports:
       - "8080:8080"
+      - "9011:9011"
     depends_on:
       config-server:
         condition: service_healthy
@@ -117,8 +140,10 @@ services:
 
   auth-service:
     build: ./auth-service
+    <<: *microservice-resources
     ports:
       - "9002:9002"
+      - "9014:9014"
     depends_on:
       config-server:
         condition: service_healthy
@@ -131,8 +156,10 @@ services:
 
   user-service:
     build: ./user-service
+    <<: *microservice-resources
     ports:
       - "9003:9003"
+      - "9013:9013"
     depends_on:
       config-server:
         condition: service_healthy
@@ -145,8 +172,10 @@ services:
 
   data-analysis-service:
     build: ./data-analysis-service
+    <<: *microservice-resources
     ports:
       - "9000:9000"
+      - "9016:9016"
     depends_on:
       config-server:
         condition: service_healthy
@@ -161,8 +190,10 @@ services:
 
   data-retrieval-service:
     build: ./data-retrieval-service
+    <<: *microservice-resources
     ports:
       - "9004:9004"
+      - "9015:9015"
     depends_on:
       config-server:
         condition: service_healthy
@@ -227,6 +258,67 @@ services:
     networks:
       - microservices-network
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.15.3
+    container_name: logstash
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "5044:5044"
+    volumes:
+      - ./docker-config/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    networks:
+      - microservices-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.3
+    container_name: kibana
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      XPACK_SECURITY_ENABLED: "false"
+    ports:
+      - "5601:5601"
+    networks:
+      - microservices-network
+
+  fluent-bit:
+    image: fluent/fluent-bit:3.1
+    container_name: fluent-bit
+    depends_on:
+      - logstash
+    volumes:
+      - ./docker-config/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - ./docker-config/fluent-bit/parsers.conf:/fluent-bit/etc/parsers.conf:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - microservices-network
+
 volumes:
   mongo-data:
   postgres-data:
@@ -234,4 +326,4 @@ volumes:
   grafana-data:
   loki-data:
   tempo-data:
-
+  elasticsearch-data:
